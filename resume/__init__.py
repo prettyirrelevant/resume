@@ -15,4 +15,6 @@ def create_app(config):
     migrate.init_app(app, db)
 
     with app.app_context():
+        from . import routes
+
         return app
