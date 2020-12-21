@@ -6,12 +6,25 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% if title %}{{ title }}{% else %} Resume {% endif %}</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+          rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css"
           integrity="sha512-+WF6UMXHki/uCy0vATJzyA9EmAcohIQuwpNz0qEO+5UeE5ibPejMRdFuARSrl1trs3skqie0rY/gNiolfaef5w=="
           crossorigin="anonymous"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css"
           integrity="sha512-xIf9AdJauwKIVtrVRZ0i4nHP61Ogx9fSRAkCLecmE2dL/U8ioWpDvFCAy4dcfecN72HHB9+7FfQj3aiO68aaaw=="
           crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/lint/lint.min.css"
+          integrity="sha512-6Owk90V+dmnBh35Q/OWxqfmLXExGMWDwb7tijRebrz7lLkDxZ7RS+eiNQmpUPrlWtpQulb/BkatkyPwPkMhpUQ=="
+          crossorigin="anonymous"/>
+    <style>
+        .CodeMirror {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            height: 800px;
+        }
+    </style>
 </head>
 <body class="font-mono bg-gray-800">
 <nav class="py-4 text-blue-500 bg-gray-100">
@@ -20,8 +33,58 @@
         <a href="#" class="cursor-pointer hover:underline font-bold tracking-wider text-lg">About</a>
     </div>
 </nav>
+<div class="mt-10 mx-auto container px-6 text-gray-200">
+    <!--suppress HtmlFormInputWithoutLabel -->
+    <textarea id="editor" placeholder='Enter a code'></textarea>
+{#    buttons#}
+    <div class="grid md:grid-cols-3 grid-cols-1 gap-4 mt-4">
+        <button id="clear" class="bg-red-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Clear</button>
+        <button id="reset" class="bg-yellow-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Reset</button>
+        <button id="generate" class="bg-green-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Generate PDF</button>
+    </div>
+</div>
+<div class="mt-10 mb-4 w-full flex justify-center text">
+    <a href="https://github.com/prettyirrelevant/resume" class="mx-10 text-blue-500 hover:underline">Github</a>
+    <a href="https://twitter.com/_peratzatha" class="mx-10 text-blue-500 hover:underline">Twitter</a>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"
         integrity="sha512-zuvaVNiXwWY7U7HEdXsoTislTEElpKLELFoyQw0Bg7zfGhC4vG8eAhCxIQAvHmprW7dFhTq5zshUko4K3B4mSA=="
         crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js"
+        integrity="sha512-EKqHN1wvffwb5Hx+y5JeXPGNDKKxxW1Es4hexkgSf+QkQwEDNs6bp4KKCRNVLUbRPGkrDQ7yEVwvDg1tq7n1fA=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/edit/matchbrackets.min.js"
+        integrity="sha512-GlBJlDrIKL93TzLT5WYpPw9wRicOOghofNDodqg9WXPyLLFFb4RSERKonID8LLs6GpCCgXCbEGIraojzI+ngPA=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/edit/closebrackets.min.js"
+        integrity="sha512-B+mNfayB2LLir8I9Dy+0F2JTkRB9JxNC6+lHRo48ni7MRNe/U6pH7JfDy8zuI28AHYKMHi7/nylf3rOEGl9HFA=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/lint/lint.min.js"
+        integrity="sha512-VDabhEJKZttezx9vFT88J4+02yBCM7ebSYisA72aX0d2KJ6iuAXZjbZVXOsClAPdhTPMbq97D22VShP2kAu5/g=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsonlint/1.6.0/jsonlint.min.js"
+        integrity="sha512-6qbnCNQe7wVcBDvhNJT6lZsbDKHCQQBk7yOBQg4s/9GG812CknK0EEIqG2IS10XuNxIQNWjMJd6VLwwezICz6w=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/lint/json-lint.min.js"
+        integrity="sha512-40xVcCik6TlUiZadnRc6ZM0BN65s7F+C3K7eBqGRf8dmjKApjzoiT/GB1GJmdICOZbXjJCiTBbVlsIvFs8A/+Q=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/display/placeholder.min.js"
+        integrity="sha512-Q4yEMifBeStjSrSDyq+XrgpZHXpbyfR/E4jiZCXkqf66Gi9vvp7wdBlD86mlBzSFvBjkT+cafYMU3GdlvRZcOA=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.0/beautify.min.js"></script>
+<script>
+  const placeholder = '{"full_name": "John Doe","job_position": "Python Developer","personal_profile": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pellentesque ac tellus quis lobortis. Duis ut tellus vel lectus fermentum congue.","skills": ["HTML5", "CSS3", "JavaScript"],"phone_number":"+2349944738983","email":"johndoe@gmail.com","website":"johndoe.com","awards":[{"title":"Awarded Bell and Tanner’s Top Researcher", "year":"August, 2015"},{"title":"Awarded Bell and Tanner’s Top Researcher", "year":"August, 2015"}],"work_experiences":[{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]},{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]},{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]}], "education": [{"institution": "University of El Dorado", "degree": "Bachelor of Science in Anthropology", "year": 2000}, {"institution": "University of El Dorado", "degree": "Bachelor of Science in Anthropology", "year": 2000}]}'
+  const editor = new CodeMirror.fromTextArea(document.querySelector("#editor"), {
+    lineNumbers: true,
+    indentUnit: 4,
+    tabSize: 4,
+    matchBrackets: true,
+    gutters: ["CodeMirror-lint-markers"],
+    lint: true,
+    autoCloseBrackets: true,
+    mode: "application/json"
+  })
+  editor.getDoc().setValue(js_beautify(placeholder, {indent_size: 4}))
+</script>
 </body>
 </html>
