@@ -6,8 +6,22 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{% if title %}{{ title }}{% else %} Resume {% endif %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css"
+          integrity="sha512-+WF6UMXHki/uCy0vATJzyA9EmAcohIQuwpNz0qEO+5UeE5ibPejMRdFuARSrl1trs3skqie0rY/gNiolfaef5w=="
+          crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css"
+          integrity="sha512-xIf9AdJauwKIVtrVRZ0i4nHP61Ogx9fSRAkCLecmE2dL/U8ioWpDvFCAy4dcfecN72HHB9+7FfQj3aiO68aaaw=="
+          crossorigin="anonymous"/>
 </head>
-<body>
-
+<body class="font-mono bg-gray-800">
+<nav class="py-4 text-blue-500 bg-gray-100">
+    <div class="container mx-auto flex justify-between px-6">
+        <a href="/" class="cursor-pointer hover:underline font-bold tracking-wider text-lg">Resume.XYZ</a>
+        <a href="#" class="cursor-pointer hover:underline font-bold tracking-wider text-lg">About</a>
+    </div>
+</nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"
+        integrity="sha512-zuvaVNiXwWY7U7HEdXsoTislTEElpKLELFoyQw0Bg7zfGhC4vG8eAhCxIQAvHmprW7dFhTq5zshUko4K3B4mSA=="
+        crossorigin="anonymous"></script>
 </body>
 </html>
