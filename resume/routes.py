@@ -12,6 +12,9 @@ from flask import (
 )
 from weasyprint import HTML
 
+from . import db
+from .models import Download
+
 DIRECTORY = app.config.get("PDF_PATH")
 
 
@@ -22,10 +25,16 @@ def index():
 
 @app.route("/generate", methods=["POST"])
 def generate():
+    # a queue can be used but for now i think it isn't necessary
     data = json.loads(request.data)
     html = render_template("resumes/1.html", data=data)
     filename = secrets.token_hex(10) + ".pdf"
     pdf = HTML(string=html).write_pdf(os.path.join(DIRECTORY, filename))
+
+    # keep track of downloads
+    download = Download(filename=filename)
+    db.session.add(download)
+    db.session.commit()
 
     return jsonify({"url": url_for("send_pdf", name=filename, _external=True)})
 
