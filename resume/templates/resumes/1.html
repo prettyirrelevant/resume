@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css"
+          integrity="sha512-+WF6UMXHki/uCy0vATJzyA9EmAcohIQuwpNz0qEO+5UeE5ibPejMRdFuARSrl1trs3skqie0rY/gNiolfaef5w=="
+          crossorigin="anonymous"/>
+    <title>{{ data.first_name + '-' + data.last_name }}</title>
+    <style>
+        .chocolate {
+            color: chocolate;
+        }
+    </style>
+</head>
+<body style="font-family: 'Montserrat', sans-serif">
+<!-- personal details -->
+<h1 class="text-4xl chocolate font-bold">{{ data.first_name + ' ' +data.last_name }}</h1>
+<ul class="my-2">
+    <li class="inline tracking-wider text-sm">{{ data.address }}</li>
+    <li class="inline ml-4 tracking-wider text-sm">{{ data.phone_number }}</li>
+    <li class="inline ml-4 tracking-wider text-sm">{{ data.email }}</li>
+</ul>
+<hr class="border-2 border-gray-600 mt-3">
+
+<!-- objectives -->
+<div class="mt-6">
+    <h4 class="chocolate text-2xl mb-3 tracking-wide">Career Objective</h4>
+    <p class="tracking-wider font-light">{{ data.objective }}</p>
+</div>
+
+<!-- work experience -->
+<div class="mt-6">
+    <h4 class="chocolate text-2xl tracking-wide">Professional Experience</h4>
+    {% for experience in data.work_experiences %}
+        <div class="mt-4">
+            <h4 class="uppercase tracking-widest font-medium">{{ experience.company }}</h4>
+            <h6 class="italic text-sm my-1 tracking-wider">{{ experience.position + ', ' + experience.duration }}</h6>
+            <ul class="list-disc ml-12 tracking-widest text-sm">
+                {% for highlight in experience.highlights %}
+                    <li class="pl-4">{{ highlight }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- education -->
+<div class="mt-6">
+    <h4 class="chocolate text-2xl tracking-wide">Education</h4>
+    {% for education in data.educations %}
+        <div class="mt-4">
+            <h4 class="uppercase tracking-widest font-medium">{{ education.name }}</h4>
+            <h6 class="italic text-sm my-1 tracking-wider">{{ education.degree + ', ' + education.grad_year|string }}</h6>
+            <ul class="list-disc ml-12 tracking-widest text-sm">
+                {% for highlight in education.highlights %}
+                    <li class="pl-4">{{ highlight }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- additional skills -->
+<div class="mt-6">
+    <h4 class="chocolate text-2xl mb-2 tracking-wide">Additional Skills</h4>
+    <ul class="list-disc ml-12 tracking-widest text-sm">
+        {% for skill in data.skills %}
+            <li class="pl-1">{{ skill }}</li>
+        {% endfor %}
+    </ul>
+
+</div>
+
+</body>
+</html>
