@@ -28,7 +28,7 @@ def generate():
     # a queue can be used but for now i think it isn't necessary
     data = json.loads(request.data)
     html = render_template("resumes/1.html", data=data)
-    filename = secrets.token_hex(10) + ".pdf"
+    filename = data['first_name'] + data['last_name'] + ".pdf"
     pdf = HTML(string=html).write_pdf(os.path.join(DIRECTORY, filename))
 
     # keep track of downloads
