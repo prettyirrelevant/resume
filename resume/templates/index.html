@@ -158,7 +158,7 @@
       // display success message
       displaySuccess('Resume generation successful!')
       window.location = json.url
-    }).catch(error => displayError(error))
+    }).catch(error => displayError('an error occurred!'))
   })
 
   function displayError(message) {
