@@ -158,7 +158,12 @@
       // display success message
       displaySuccess('Resume generation successful!')
       window.location = json.url
-    }).catch(error => displayError('an error occurred!'))
+    }).catch(error => {
+      // remove spinner
+      generateBtn.firstElementChild.classList.add('hidden')
+
+      displayError('an error occurred!')
+    })
   })
 
   function displayError(message) {
