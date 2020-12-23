@@ -24,6 +24,14 @@
             font-size: 14px;
             height: 800px;
         }
+
+        .loader {
+            border: 4px solid white;
+            border-radius: 50%;
+            border-top: 4px solid black;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body class="font-mono bg-gray-800">
@@ -35,12 +43,22 @@
 </nav>
 <div class="mt-10 mx-auto container px-6 text-gray-200">
     <!--suppress HtmlFormInputWithoutLabel -->
-    <textarea id="editor" placeholder='Enter a code'></textarea>
-{#    buttons#}
+    <textarea id="editor"></textarea>
+    {#    buttons#}
     <div class="grid md:grid-cols-3 grid-cols-1 gap-4 mt-4">
-        <button id="clear" class="bg-red-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Clear</button>
-        <button id="reset" class="bg-yellow-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Reset</button>
-        <button id="generate" class="bg-green-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">Generate PDF</button>
+        <button id="clear"
+                class="outline-none focus:outline-none bg-red-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">
+            Clear
+        </button>
+        <button id="reset"
+                class="outline-none focus:outline-none bg-yellow-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">
+            Reset
+        </button>
+        <button id="generate"
+                class="flex items-center justify-center outline-none focus:outline-none bg-green-500 rounded-lg shadow-lg py-2 text-gray-800 hover:text-white">
+            <span class="hidden animate-spin loader inline-block mr-4"></span>
+            <span class="inline-block">Generate PDF</span>
+        </button>
     </div>
 </div>
 <div class="mt-10 mb-4 w-full flex justify-center text">
@@ -73,7 +91,35 @@
         crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.13.0/beautify.min.js"></script>
 <script>
-  const placeholder = '{"full_name": "John Doe","job_position": "Python Developer","personal_profile": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin pellentesque ac tellus quis lobortis. Duis ut tellus vel lectus fermentum congue.","skills": ["HTML5", "CSS3", "JavaScript"],"phone_number":"+2349944738983","email":"johndoe@gmail.com","website":"johndoe.com","awards":[{"title":"Awarded Bell and Tanner’s Top Researcher", "year":"August, 2015"},{"title":"Awarded Bell and Tanner’s Top Researcher", "year":"August, 2015"}],"work_experiences":[{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]},{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]},{"position": "Lead Developer", "company": "Google Inc.", "duration":"2017 - Present", "details": ["Organizes and conducts interviews with clients and subjects", "Prepares research publications"]}], "education": [{"institution": "University of El Dorado", "degree": "Bachelor of Science in Anthropology", "year": 2000}, {"institution": "University of El Dorado", "degree": "Bachelor of Science in Anthropology", "year": 2000}]}'
+  const clearBtn = document.querySelector("#clear")
+  const resetBtn = document.querySelector("#reset")
+  const generateBtn = document.querySelector("#generate")
+  const placeholder = {
+    first_name: 'John',
+    last_name: 'Doe',
+    address: '44 Bright Majekodunmi Lagos NG',
+    phone_number: '+2341234567890',
+    email: 'johndoe@email.com',
+    objective: 'cursus sit amet dictum sit amet justo donec enim diam vulputate ut pharetra sit amet aliquam id diam maecenas ultricies mi eget mauris pharetra et ultrices neque ornare aenean euismod',
+    work_experiences: [{
+      company: 'Google Inc.',
+      position: 'iOS Developer',
+      duration: 'Aug 2012 - Present',
+      highlights: ['build dark mode', 'added special features']
+    }, {
+      company: 'Google Inc.',
+      position: 'iOS Developer',
+      duration: 'Aug 2012 - Present',
+      highlights: ['build dark mode', 'added special features']
+    }],
+    educations: [{
+      name: 'California Institute of Technology',
+      degree: 'BSc. Computer Science',
+      grad_year: 2008,
+      highlights: ['GPA: 3.7/5', 'built an app for department']
+    }],
+    skills: ['Adobe XD', 'AWS', 'Figma', 'Linux', 'PostgreSQL']
+  }
   const editor = new CodeMirror.fromTextArea(document.querySelector("#editor"), {
     lineNumbers: true,
     indentUnit: 4,
@@ -84,7 +130,58 @@
     autoCloseBrackets: true,
     mode: "application/json"
   })
-  editor.getDoc().setValue(js_beautify(placeholder, {indent_size: 4}))
+  editor.setValue(js_beautify(JSON.stringify(placeholder), {indent_size: 4}))
+
+  clearBtn.addEventListener('click', e => {
+    editor.setValue("")
+  })
+
+  resetBtn.addEventListener('click', e => {
+    editor.setValue(js_beautify(JSON.stringify(placeholder), {indent_size: 4}))
+  })
+
+  generateBtn.addEventListener('click', e => {
+    if (!editor.getValue()) return displayError('field cannot be blank!')
+
+    // add spinner
+    generateBtn.firstElementChild.classList.remove('hidden')
+
+    fetch('/generate', {
+      method: 'POST',
+      mode: 'same-origin',
+      cache: 'no-cache',
+      headers: {'Content-Type': 'application/json'},
+      body: editor.getValue()
+    }).then(response => response.json()).then(json => {
+      // remove spinner
+      generateBtn.firstElementChild.classList.add('hidden')
+      // display success message
+      displaySuccess('Resume generation successful!')
+      window.location = json.url
+    }).catch(error => displayError(error))
+  })
+
+  function displayError(message) {
+    const alertMsg = document.createElement("p")
+    alertMsg.classList.add("md:w-1/6", "w-4/6", "text-center", "fixed", "top-0", "right-0", "mr-4", "mt-2", "bg-red-400", "text-gray-100", "font-bold", "tracking-wider", "px-4", "py-2", "rounded-lg")
+    alertMsg.textContent = message
+
+    document.body.appendChild(alertMsg)
+    setTimeout(() => {
+      alertMsg.remove()
+    }, 2000)
+  }
+
+  function displaySuccess(message) {
+    const alertMsg = document.createElement("p")
+    alertMsg.classList.add("md:w-1/6", "w-4/6", "text-center", "fixed", "top-0", "right-0", "mr-4", "mt-2", "bg-green-400", "text-gray-100", "font-bold", "tracking-wider", "px-4", "py-2", "rounded-lg")
+    alertMsg.textContent = message
+
+    document.body.appendChild(alertMsg)
+    setTimeout(() => {
+      alertMsg.remove()
+    }, 2000)
+  }
 </script>
 </body>
 </html>
