@@ -6,10 +6,10 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 
-def create_app(config):
+def create_app(development, production):
     app = Flask(__name__)
-    app.config.from_object(config)
-    app.config.from_envvar("FLASK_SETTINGS", silent=True)
+    app.config.from_object(development)
+    app.config.from_object(production)
 
     db.init_app(app)
     migrate.init_app(app, db)
